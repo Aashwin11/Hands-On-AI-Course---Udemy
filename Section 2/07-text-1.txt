@@ -1,0 +1,13 @@
+A bunch of functions/methods together is called a - Class 
+    - Its like a factory have many functions
+    - Class must have init method
+        - init is like a preparation method to setup factory
+
+Object:
+    - A cup, kettle is an Object
+
+Properties:
+    - Colour of the cup, sweetness of chai
+
+Methods:
+    - Actionable steps.

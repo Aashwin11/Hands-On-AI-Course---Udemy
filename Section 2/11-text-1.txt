@@ -1,0 +1,28 @@
+Virtual Environment
+    - A computer has python,
+    - We can bring 3rd party code, and bring can bring those code to our system
+    - if 3rd part code gets an update and some code of mine was n
+
+
+Create Virtual Env:
+    - Create a folder 
+    Create:
+    - Right click and open integrated terminal
+        - > python -m venv environment_name Press Enter
+        - This creates a new folder with env name
+
+    - Activate the env:
+        - envirnment_name\Scripts\activate
+        Mac: source  envirnment_name/bin/activate
+
+    In the env,we can install S/W Modules
+
+2nd way:
+    - Create a file requirements.txt 
+        - Write what all modules is needed like : 
+            request==2.31.0 
+            flask==3.0.0
+
+    - And then type command : > pip install -r requirements.txt
+
+To deactivate a running env, type command : > deactivate

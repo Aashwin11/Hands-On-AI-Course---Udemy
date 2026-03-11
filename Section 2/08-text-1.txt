@@ -1,0 +1,9 @@
+Why Python ?
+    - Portable. 
+        - Run on variety of OS
+    - Readable
+    - Productive
+    - Standard template Library
+    - FLexible and multi-use
+    - Automation, data science
+    

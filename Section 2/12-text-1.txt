@@ -1,0 +1,6 @@
+Modules:
+    - py files are called modules
+
+Pacakge:
+    -  Any folder having __init__.py file is called as Pacakge
+    -  A python vocabulary

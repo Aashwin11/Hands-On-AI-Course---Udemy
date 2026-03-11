@@ -1,0 +1,17 @@
+Data Types:
+    - 
+
+Manipulate Data:
+
+
+Object and Mutability:
+
+    - In python, everything is an object.
+    - Anything seen is always an Object. Every object has a unique identity.
+    - Every object is a unique type.
+    - Each object has some value. Value can be empty
+
+    Mutable and Immutable:
+        - Mutable means changeable
+        - Immutable - not changable
+        - identity of an object helps to get if its mutable or Immutable
