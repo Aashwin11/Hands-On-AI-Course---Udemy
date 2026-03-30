@@ -6,7 +6,7 @@ class CameraBase:
         return self.cameraPixel
 
 class Phone():
-    camera_px=CameraBase
+    # camera_px=CameraBase
 
     def __init__(self,phone_name):
         self.camera_px=CameraBase(150)
