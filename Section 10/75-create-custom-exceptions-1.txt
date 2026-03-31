@@ -1,0 +1,41 @@
+## #75. Custom Exception Classes
+
+While Python has many built-in errors (like `ValueError` or `KeyError`), you can create your own **Custom Exception Classes** to represent specific "incidents" in your shop.
+
+---
+
+### Inheriting from the Exception Class
+To create a custom error, you define a new `class` and inherit from the built-in `Exception` class. This tells Python that your new class should behave like an error.
+
+
+
+```python
+# Inheriting from the base Exception class
+class Base_OutOfIngredientsError(Exception): 
+    # 'pass' is used because we just need the name and structure
+    pass
+
+def make_chai(milk, sugar):
+    # Defining a specific business rule for ingredients
+    if milk == 0 or sugar == 0:
+        # Raising our custom-made incident
+        raise Base_OutOfIngredientsError("Missing Milk or sugar")
+    
+    print(f"Chai is ready ....")
+
+# This will trigger our custom Base_OutOfIngredientsError
+make_chai(0, 1)
+```
+
+---
+
+### Why use Custom Exceptions?
+
+* **Specific Identification:** Instead of a generic error, your code explicitly states that the issue is a `Base_OutOfIngredientsError`.
+* **Inheritance:** By inheriting from `Exception`, your custom error can be caught using a standard `try...except` block just like any other Python error.
+* **Organization:** It makes the "notes" of your code much clearer—anyone reading it knows exactly what business logic failed (e.g., the shop ran out of ingredients).
+
+---
+
+### Key Takeaway
+Using `class MyError(Exception): pass` allows you to build a specialized signaling system for your application, moving beyond basic built-in types to describe exactly what went wrong in your specific process.
