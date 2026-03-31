@@ -15,12 +15,12 @@ def take_orders():
 
     for i in range(1,4):
         print(f"Taking order: #{i}..... ")
-        time.sleep(2) #1 is second
+        time.sleep(4) #1 is second
 
 def brew_chai():
     for i in range(1,4):
         print(f"Brewing chai for order: #{i}....")
-        time.sleep(3)
+        time.sleep(2)
 
 
 #Create threads
@@ -38,3 +38,4 @@ take_order_thread.join()
 brew_thread.join()
 
 print("Process completed")
+
