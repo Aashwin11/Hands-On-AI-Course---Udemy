@@ -1,0 +1,70 @@
+## #72. try, except, else, finally
+
+**The Syntax for Gracefully Handling Errors**
+
+In this session, we learn how to wrap risky code into a "safe bubble" to prevent the entire program from crashing when an incident occurs.
+
+---
+
+### The Basic "Safe Bubble"
+When you try to access a key that isn't in your dictionary, Python usually crashes. By using `try` and `except`, we catch the error before it breaks the "shop."
+
+```python
+chai_menu = {"masala": 30, "ginger": 40}
+
+try:
+    # Wrapping this into a safe bubble
+    print(chai_menu["elaichi"]) 
+except KeyError:
+    # This runs ONLY if a KeyError occurs
+    print("The key you tried to access does not exist")
+
+print("Hello code") # This will now run successfully instead of crashing!
+```
+
+---
+
+### Complex Error Handling: The Four Blocks
+For more robust logic, we use a combination of four specific keywords. Each has a unique role in the lifecycle of an "incident."
+
+
+
+| Keyword | Purpose |
+| :--- | :--- |
+| **`try`** | The block where you put code that *might* cause an error. |
+| **`except`** | The "Safety Net." Runs only if an error occurs in the try block. |
+| **`else`** | The "Success Path." Runs only if **no** errors occurred in the try block. |
+| **`finally`** | The "Clean Up." It **always** runs, regardless of whether there was an error or not. |
+
+---
+
+### Example: The Chai Service Function
+In this example, we use `raise` to manually trigger an error for flavors we don't recognize, and we use the full block structure to manage the customer flow.
+
+```python
+def serve_chai(flavor):
+    try:
+        print(f"Preparing {flavor} of chai...... ")
+        if flavor == "unknown":
+            # Manually triggering an incident
+            raise ValueError("We don't know the flavor")
+        
+    except ValueError as e:
+        # Handles the specific 'unknown' flavor incident
+        print(f"Error: {e}")
+        
+    else: 
+        # In case when all goes good
+        print(f"Chai is served: {flavor}")
+        
+    finally: 
+        # It will always run, no matter what happens above
+        print("Next Customer please\n")
+
+# Testing the logic
+serve_chai("masala")  # Success Path: try -> else -> finally
+serve_chai("unknown") # Error Path: try -> except -> finally
+```
+
+### Key Takeaway
+The `finally` block is essential for tasks that must happen no matter what—like inviting the "Next Customer" or closing a shop gate—ensuring your system is always ready for the next operation even after a "milk spill."

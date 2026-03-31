@@ -1,0 +1,47 @@
+## #71. Error Handling
+**Graceful handling of errors**
+
+In programming, errors are inevitable. Graceful handling ensures that when something goes wrong, your entire application doesn't come crashing down. Instead of a "hard crash," the program handles the issue and continues to run or shuts down safely.
+
+---
+
+### Analogies from Chai ☕
+To understand how to handle incidents gracefully so it doesn't "crash your shop," consider these real-world scenarios:
+
+* **The Milk Spill:** If milk spills while making chai, you don't shut down the entire cafe. You clean it up, grab a new packet, and continue the process.
+* **The Missing Ingredient:** If you run out of ginger, you don't stop serving all customers. You simply inform them or offer a different type of chai (like Masala) instead of letting the "system" fail.
+
+---
+
+### Common Python Errors
+Before we can handle errors, we need to recognize the common "incidents" that occur in code:
+
+#### 1. IndexError
+Occurs when you try to access an item in a list using an index that doesn't exist.
+```python
+orders = ["masala", "ginger"]
+print(orders[2])  # -> IndexError: list index out of range
+```
+*(Note: Since lists start at index 0, index 2 would be the 3rd item, which isn't there.)*
+
+#### 2. KeyError
+Triggered when you try to access a **key** in a dictionary that has not been defined.
+
+#### 3. ZeroDivisionError
+Happens when you attempt to divide a number by **zero**, which is mathematically undefined and technically impossible for the computer to process.
+
+#### 4. TypeError
+Occurs when an operation is performed on an inappropriate data type.
+* **Example:** Trying to add an `int` (integer) to a `string`, or vice versa.
+
+#### 5. NameError
+Happens when the code tries to access a **variable** or function name that has not been created or defined yet.
+
+---
+
+### The Goal: Graceful Handling
+The core lesson is to anticipate these specific incidents (like the milk spill or the `IndexError`) and write code that catches them. By doing this, your "shop" (the program) stays open even when a small mistake occurs.
+
+
+Link:
+https://gemini.google.com/app/a0020fc38649b1e4?is_sa=1&is_sa=1&android-min-version=301356232&ios-min-version=322.0&campaign_id=bkws&utm_source=sem&utm_source=google&utm_medium=paid-media&utm_medium=cpc&utm_campaign=bkws&utm_campaign=2024enIN_gemfeb&pt=9008&mt=8&ct=p-growth-sem-bkws&gclsrc=aw.ds&gad_source=1&gad_campaignid=20357620749&gbraid=0AAAAApk5BhnorMSb-mRIFNBF_niE0Ypn3&gclid=Cj0KCQjwl5jHBhDHARIsAB0YqjzuCzLmamA_vP6QkWe2bK3KXuQT2SS03wsy39g9JAhxpAv33hj6g7YaAirjEALw_wcB

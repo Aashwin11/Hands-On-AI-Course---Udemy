@@ -1,0 +1,48 @@
+## #73. Catching Multiple Exceptions
+
+Sometimes, a single block of code can fail in different ways. To keep the shop running smoothly, we can set up multiple "safety nets" (except blocks) to catch specific types of incidents.
+
+---
+
+### Handling Different "Incidents"
+In the `process_Order` function, two things could go wrong: 
+1. The customer asks for a flavor we don't have (**KeyError**).
+2. The quantity provided isn't a number (**TypeError**).
+
+### Example: The Order Processor
+We use multiple `except` blocks to provide specific feedback for each unique error.
+
+```python
+def process_Order(item, quantity):
+    try:
+        # 1. Key Access: Looking for the item in our menu dictionary
+        price = {"masala": 20, "cardimon": 40}[item] 
+        
+        # 2. Calculation: Multiplying price by quantity
+        cost = price * quantity
+
+        print(f"Total cost is {cost}")
+
+    except KeyError as k:
+        # Handles cases where the item is missing from the dictionary
+        print("Sorry, that chai is not on menu")
+    
+    except TypeError as t:
+        # Handles cases where quantity is not a valid number (e.g., a string)
+        print("Quantity must be a number")
+
+# Test Case 1: Missing Item (Ginger is not in our dictionary)
+process_Order("Ginger", 2) 
+# Output: Sorry, that chai is not on menu
+
+# Test Case 2: Wrong Data Type ("two" is a string, not an int)
+process_Order("masala", "two")
+# Output: Quantity must be a number
+```
+
+---
+
+### Key Concepts
+* **Specific Handling:** By catching `KeyError` and `TypeError` separately, we can give the user exact instructions on what went wrong rather than a generic "Error occurred" message.
+* **Dictionary Extraction:** In the line `{"masala":20, "cardimon":40}[item]`, we are using the `item` variable as a key to extract the price value from the dictionary. If the `item` isn't a key in that dictionary, a `KeyError` is triggered.
+* **The Order Matters:** Python checks the `except` blocks from top to bottom. It will execute the first one that matches the error type and skip the rest.

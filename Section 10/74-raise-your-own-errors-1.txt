@@ -1,0 +1,34 @@
+## #74. Raise Your Own Errors: Custom Exceptions
+
+In some cases, the computer doesn't see an operation as a technical error, but it is an "incident" according to your shop's rules. We use the `raise` keyword to manually trigger an exception when our specific conditions aren't met.
+
+---
+
+### Manually Triggering Incidents
+Even if a string is technically valid in Python, it might be "invalid" for your business logic. By using `raise`, you stop the execution of the program and signal that something went wrong.
+
+### Example: The Brewing Logic
+In this scenario, we only have three flavors available. If a customer asks for anything else, we manually throw a `ValueError`.
+
+```python
+def brew_chai(flavor):
+    # Defining our business rules: only 3 flavors allowed
+    if flavor not in ["masala", "ginger", "elaichi"]:
+        # Manually triggering the error with a custom message
+        raise ValueError("The flavor does not exist")
+    
+    print(f"Brewing the flavor {flavor}")
+
+# This will work fine
+brew_chai("masala")
+
+# This will trigger the ValueError: "The flavor does not exist"
+brew_chai("mint")
+```
+
+---
+
+### Why use `raise`?
+* **Control:** It allows you to define what counts as an error in your specific application (e.g., "mint" isn't a coding error, but it's a "shop" error).
+* **Communication:** You can provide a custom error message (like `"The flavor does not exist"`) to help the developer or user understand exactly why the process stopped.
+* **Stop Execution:** Once `raise` is triggered, the rest of the function (like the `print` statement) will not run, preventing "bad" chai from being brewed.
