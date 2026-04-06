@@ -33,3 +33,4 @@ booking=Booking(
     rate_per_night=1000.50
 )
 print(f"Total price{booking.total_amount}")
+print(booking.model_dump())
