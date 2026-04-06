@@ -19,3 +19,22 @@ products=[
 @app_fastapi.get("/products")
 def get_all_products():
     return products
+
+@app_fastapi.get("/product/{id}")
+def get_product_by_id(id:int):
+    for _ in products:
+        if _.id== id:
+            return _
+            
+    
+    return "Product not found"
+
+
+#Add a record
+
+@app_fastapi.post("/product")
+def add_product(product:Product):
+    products.append(product)
+    return product
+
+
