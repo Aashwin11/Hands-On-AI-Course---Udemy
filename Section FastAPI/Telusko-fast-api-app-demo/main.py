@@ -16,25 +16,49 @@ products=[
           Product(id=4, name="Table",description="Big Table",price=299,quantity=2),
 
 ]
+
+#Get all products
 @app_fastapi.get("/products")
 def get_all_products():
     return products
 
+#Get product by ID
 @app_fastapi.get("/product/{id}")
 def get_product_by_id(id:int):
     for _ in products:
         if _.id== id:
             return _
-            
-    
     return "Product not found"
 
 
 #Add a record
-
 @app_fastapi.post("/product")
 def add_product(product:Product):
     products.append(product)
     return product
+
+#Update
+@app_fastapi.put("/product")
+def update_product(id:int,product:Product):
+    for _ in range(len(products)):
+        if products[_].id== id:
+            products[_]=product
+            return f"product Added successfully {product}"
+        
+    return "No product found"
+
+
+#Delete
+
+@app_fastapi.delete("/product")
+def delete_product(name: str):
+    for product in products:
+        if product.name == name:
+            products.remove(product)
+            return "Product deleted"
+
+    return "Product not found"            
+
+
 
 
