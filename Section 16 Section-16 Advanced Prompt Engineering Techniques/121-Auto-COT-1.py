@@ -1,5 +1,5 @@
 #Zero  shot prompting :- The model is given direct question or task without prior examples
-#FYI: THis was not working with gemini model, but worked with GPT Model
+#FYI: THis was not working with gemini model, but worked with GT
 from openai import OpenAI
 from dotenv import load_dotenv
 import json
