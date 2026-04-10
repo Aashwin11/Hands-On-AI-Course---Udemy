@@ -1,7 +1,13 @@
 from fastapi import FastAPI
 #from library_name import class_name
 from models import Product
+from database import Session
+import database
+import database_models
+
 app_fastapi=FastAPI()
+
+database_models.Base.metadata.create_all(bind=database.engine)
 
 @app_fastapi.get("/")
 def greet():
@@ -20,6 +26,11 @@ products=[
 #Get all products
 @app_fastapi.get("/products")
 def get_all_products():
+    #DB_connection - talks to sqlalchemy. All these configs are done in seperate file
+    db=Session()
+    db.query()
+    #write the query
+    
     return products
 
 #Get product by ID
