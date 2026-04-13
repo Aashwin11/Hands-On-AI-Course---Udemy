@@ -1,9 +1,11 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 #from library_name import class_name
 from models import Product
-from database import Session
+from database import session
 import database
 import database_models
+from sqlalchemy.orm import Session 
+
 
 app_fastapi=FastAPI()
 
@@ -23,8 +25,15 @@ products=[
 
 ]
 
+def get_db():
+    db=session()
+    try:
+        yield db
+    finally:
+        db.close()
+
 def init_db():
-    db=Session()
+    db=session()
     count=db.query(database_models.Product).count
     if count==0:
         for product in products:
@@ -36,50 +45,62 @@ init_db()
 
 #Get all products
 @app_fastapi.get("/products")
-def get_all_products():
+def get_all_products(db: Session =Depends(get_db)):
     #DB_connection - talks to sqlalchemy. All these configs are done in seperate file
-    db=Session()
-    db.query()
+    
+    db_products=db.query(database_models.Product).all()
     #write the query
     
-    return products
+    return db_products
 
 #Get product by ID
 @app_fastapi.get("/product/{id}")
-def get_product_by_id(id:int):
-    for _ in products:
-        if _.id== id:
-            return _
+def get_product_by_id(id:int, db: Session =Depends(get_db)):
+    db_product=db.query(database_models.Product).filter(database_models.Product.id== id).first()
+    if db_product:
+        return db_product
     return "Product not found"
+    
+    
 
 
 #Add a record
 @app_fastapi.post("/product")
-def add_product(product:Product):
-    products.append(product)
-    return product
+def add_product(product:Product, db: Session =Depends(get_db)):
+    db_product=db.add(database_models.Product(**product.model_dump()))
+    db.commit()
+    return db_product
 
 #Update
 @app_fastapi.put("/product")
-def update_product(id:int,product:Product):
-    for _ in range(len(products)):
-        if products[_].id== id:
-            products[_]=product
-            return f"product Added successfully {product}"
-        
-    return "No product found"
+def update_product(id:int,product:Product,db: Session =Depends(get_db)):
+
+    #1st try to fetch the data
+    db_product=db.query(database_models.Product).filter(database_models.Product.id== id).first()
+    if db_product:
+        db_product.name=product.name
+        db_product.description=product.description
+        db_product.price=product.price
+        db_product.quantity=product.quantity
+
+        db.commit()    
+        return "Product updated"
+    else:
+        return "No Product found"
+
 
 
 #Delete
 
 @app_fastapi.delete("/product")
-def delete_product(name: str):
-    for product in products:
-        if product.name == name:
-            products.remove(product)
-            return "Product deleted"
-
-    return "Product not found"            
+def delete_product(name: str, db: Session=Depends(get_db)):
+    db_product=db.query(database_models.Product).filter(database_models.Product.name==name).first()
+    if db_product:
+        db.delete(db_product)
+        db.commit()
+        return f" Removed from DB"
+    else:
+        return "Product not found"            
 
 
 
