@@ -23,6 +23,17 @@ products=[
 
 ]
 
+def init_db():
+    db=Session()
+    count=db.query(database_models.Product).count
+    if count==0:
+        for product in products:
+        
+            db.add(database_models.Product(**product.model_dump()))    
+        db.commit()
+    
+init_db()
+
 #Get all products
 @app_fastapi.get("/products")
 def get_all_products():
