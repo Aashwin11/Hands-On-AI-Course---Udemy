@@ -6,3 +6,13 @@
 **/.env.development
 **/.env.test
 **/.env.production
+
+
+# Ignore all virtual environments (any folder containing "env")
+*env*/
+
+# Also ignore common venv naming patterns explicitly (good practice)
+venv/
+.env/
+ENV/
+env/
