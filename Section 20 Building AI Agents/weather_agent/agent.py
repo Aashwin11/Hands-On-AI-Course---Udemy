@@ -1,6 +1,16 @@
 from openai import OpenAI
-import requests, json
+import requests, json, time, os, subprocess, shutil
 from dotenv import dotenv_values
+from pydantic import BaseModel,Field
+from typing import Optional     
+
+
+#Tools
+BASH_PATH = shutil.which("bash") or r"C:\Program Files\Git\bin\bash.exe"
+def run_command(cmd:str):
+    result = subprocess.run([BASH_PATH, "-c", cmd], capture_output=True, text=True)
+    return result.stdout if result.returncode == 0 else result.stderr
+
 def get_weather(city: str):
     url=f"https://wttr.in/{city.lower()}?format=%C+%t"
     response=requests.get(url)
@@ -9,6 +19,14 @@ def get_weather(city: str):
     return (f"Something went wrong {response.status_code}")
 
 
+class MyOutputFormat(BaseModel):
+    step: str=Field(..., description="The ID of the step")
+    content: Optional[str]=Field(None, description="Optional string")
+    tool: Optional[str]=Field(None, description="Id of the tool to call")
+    input: Optional[str]=Field(None, description="Input params for the tool")
+
+    
+    
 #Creating Client
 client = OpenAI(
     api_key=dotenv_values(".env")["GEMINI_API_KEY"],
@@ -25,9 +43,12 @@ Rules:
 - Strictly understand the user's input and REACT accordingly
 - Think and act for each step.
 - Do not allow the pre trained model to overwrite your thoughts until needed.
+- When modifying files, prefer overwriting the entire file with the new content rather than using complex regex like sed, unless specifically asked to edit a single line
+- Create a new file if needed when prompted by user
 
 AVAILABLE TOOLS:
 - get weather
+- run_command(cmd:str) : Takes a system Linux command as a string and executes the command on user's system and returns the output from that command.
 
 OUTPUT JSON FORMAT:
 {
@@ -45,7 +66,7 @@ PLAN : {"step":"PLAN","content":"🤖:User is interested to know the weather abo
 PLAN :  {"step":"PLAN","content":"🤖:Looking for available Tools"}
 PLAN :  {"step":"PLAN","content":"✅:Found Tool get_weather"}
 TOOL :  {"step":"TOOL","tool":"get_weather"}
-OUTPUT: {"step":"OUTPUT","content":"✅:Tool get_weather executed"}
+OUTPUT: {"step":"PLAN","content":"✅:Tool get_weather executed"}
 PLAN :  {"step":"PLAN","content":"🤖:Generating User Output"}
 OUTPUT: {"step":"OUTPUT","content":"✅:Greetings Aashwin, The Weather for the Delhi is 20 C. Looks partially cloudy. Carry an Umbrella "}
 """
@@ -55,27 +76,31 @@ messages=[{"role":"system","content":SYSTEM_PROMPT,},
     {"role":"user","content":user_input},
     ]
 while True:
-    response=client.chat.completions.create(
-    model="gemini-2.5-flash",
+    time.sleep(10)
+    response=client.chat.completions.parse(
+    model="gemini-2.5-flash-lite",
     messages=messages,
-    response_format={"type":"json_object"}
+    response_format=MyOutputFormat
     )
     messages.append({"role":"assistant","content":response.choices[0].message.content})
-    parsed_result=json.loads(response.choices[0].message.content)
+    parsed_result=response.choices[0].message.parsed
     
-    if parsed_result["step"]=="START":
-        print(f"{parsed_result['input']}")
+    if parsed_result.step=="START":
+        print(f"{parsed_result.input}")
         continue
-    if parsed_result["step"]=="PLAN":
-        print(f"{parsed_result['content']}")
+    if parsed_result.step=="PLAN":
+        print(f"{parsed_result.content}")
         continue
-    if parsed_result["step"]=="TOOL":
-        tool_name=parsed_result['tool']
-        tool_input=parsed_result.get('input','Delhi')
+    if parsed_result.step=="TOOL":
+        tool_name=parsed_result.tool
+        tool_input=parsed_result.input
         
         if tool_name=="get_weather":
             print(f"Executing tool {tool_name} for {tool_input}...")
             tool_response=get_weather(tool_input)
+        elif tool_name == "run_command":
+            print(f"Executing system command: {tool_input}")
+            tool_response = run_command(tool_input)
         else:
             tool_response=f"Tool {tool_name} is not found"
         messages.append(
@@ -85,8 +110,8 @@ while True:
         
         continue
     
-    if parsed_result["step"]=="OUTPUT":
-        print(f"FINAL OUTPUT:{parsed_result['content']}")
+    if parsed_result.step=="OUTPUT":
+        print(f"FINAL OUTPUT:{parsed_result.content}")
         break
     
 
