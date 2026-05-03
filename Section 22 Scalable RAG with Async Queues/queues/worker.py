@@ -4,7 +4,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from dotenv import load_dotenv
 import os
 
-load_dotenv("../.env")
+load_dotenv()
 
 gemini_api_key=os.getenv("GEMINI_API_KEY")
 client=OpenAI(
@@ -38,7 +38,7 @@ def process_query(user_query:str):  #We will receive query here, process here an
 You should only answer the user based on the following context and navigate the user to open the right page to know
 
 Context:
-{context}
+{Context}
 
 """
     response=client.chat.completions.create(

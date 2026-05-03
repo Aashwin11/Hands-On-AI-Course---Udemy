@@ -1,6 +1,11 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, Query
 from client.rq_client import queue
 from queues.worker import process_query
+
+
 
 app=FastAPI()
 
@@ -16,3 +21,12 @@ def chat(
     job=queue.enqueue(process_query,query) #returns ID of the job 
     
     return {"status":"queued","job_id":job.id}
+
+@app.get("/job_status")
+def get_result(
+    job_id:str=Query(...,description="JOB ID")
+):
+    job=queue.fetch_job(job_id=job_id)
+    result=job.return_value()
+    
+    return {"result":result}
