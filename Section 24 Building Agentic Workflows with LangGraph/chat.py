@@ -2,6 +2,19 @@ from typing_extensions import TypedDict
 from typing import Annotated
 from langgraph.graph.message import add_messages
 from langgraph.graph import StateGraph, START, END
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+api=os.getenv("GEMINI_API_KEY")
+
+#adding LLM Model
+client=OpenAI(
+    api_key=api,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
 
 
 # Created State
@@ -16,7 +29,14 @@ graph_builder=StateGraph(State)
 #Creating Nodes
 def chat_bot_node(state:State):
     print("\n... Working inside ChatBot Node\n",state)
-    return {"messages":["\nHi, this is message from ChatBot Node\n"]}
+    input_message=state["messages"][-1].content
+    response=client.chat.completions.create(
+        model="gemini-2.5-flash",
+        messages=[
+            {"role":"user","content":input_message}
+        ]
+    )
+    return {"messages":[response.choices[0].message.content]}
 
 def end_node(state:State):
     print("\n... Working inside End Node\n",state)
@@ -38,3 +58,5 @@ graph=graph_builder.compile()
 #to run the graph, we have invoke the graph and pass initial state
 updated_state = graph.invoke(State({"messages": ["\nHi, my name is Lisa\n"]}))
 print("Updated State:",updated_state)
+
+
