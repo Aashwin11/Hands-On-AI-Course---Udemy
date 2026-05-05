@@ -3,7 +3,9 @@ from typing import Annotated
 from langgraph.graph.message import add_messages
 from langgraph.graph import StateGraph, START, END
 from openai import OpenAI
+from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
+from langgraph.checkpoint.mongodb import MongoDBSaver  
 import os
 
 
@@ -11,7 +13,8 @@ load_dotenv()
 api=os.getenv("GEMINI_API_KEY")
 
 #adding LLM Model
-client=OpenAI(
+llm=ChatOpenAI(
+    model="gemini-2.5-flash",
     api_key=api,
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
 )
@@ -28,18 +31,12 @@ graph_builder=StateGraph(State)
 
 #Creating Nodes
 def chat_bot_node(state:State):
-    print("\n... Working inside ChatBot Node\n",state)
-    input_message=state["messages"][-1].content
-    response=client.chat.completions.create(
-        model="gemini-2.5-flash",
-        messages=[
-            {"role":"user","content":input_message}
-        ]
-    )
-    return {"messages":[response.choices[0].message.content]}
+    print("\n... Working inside ChatBot Node\n")
+    response = llm.invoke(state["messages"])
+    return {"messages": [response]}
 
 def end_node(state:State):
-    print("\n... Working inside End Node\n",state)
+    print("\n... Working inside End Node\n")
     return {"messages":["\nEnd of the Langgraph\n"]}
 
 #Graph builder does not know that a node is created/existing. We need to explicitly tell that the node exists
@@ -55,8 +52,30 @@ graph_builder.add_edge("End-Node",END)
 #Compile the graph created
 graph=graph_builder.compile()
 
-#to run the graph, we have invoke the graph and pass initial state
-updated_state = graph.invoke(State({"messages": ["\nHi, my name is Lisa\n"]}))
-print("Updated State:",updated_state)
+# in the complie we can create function to complie grapgh with checkpointer
+
+def compile_graph_with_checkpointer(checkpointer):
+    graph=graph_builder.compile(checkpointer=checkpointer)
+    return graph
+
+
+MONGODB_URI='mongodb://admin:admin@localhost:27017'
+with MongoDBSaver.from_conn_string(MONGODB_URI) as checkpointer:
+    graph_with_checkpointer=compile_graph_with_checkpointer(checkpointer=checkpointer)
+
+    config = {
+            "configurable": {
+                "thread_id": "John"
+            }
+        }
+
+
+    #to run the graph, we have invoke the graph and pass initial state
+    for chunk in graph_with_checkpointer.stream(
+        State({"messages": ["\nWhat is my name ?\n"]}),
+        config,
+        stream_mode="values"
+    ):
+        chunk["messages"][-1].pretty_print()
 
 
