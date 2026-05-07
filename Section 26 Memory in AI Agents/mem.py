@@ -20,7 +20,7 @@ config={
         "provider":"gemini",
         "config":{
             "api_key": GEMINI_API_KEY,
-            "model": "gemini-3.1-flash-lite-preview"
+            "model": "gemini-2.5-flash"
     }
     },
     
@@ -67,7 +67,7 @@ while True:
     
 
     response=client.chat.completions.create(
-        model="gemini-3.1-flash-lite-preview",
+        model="gemini-2.5-flash",
         messages=[
             {"role":"system","content":SYSTEM_PROMPT},
             {"role":"user","content":user_query}
