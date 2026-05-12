@@ -5,10 +5,20 @@ import os
 from google import genai
 from google.genai import types
 import wave
+import pyaudio
 
 load_dotenv()
 
 GEMINI_API_KEY=os.getenv("GEMINI_API_KEY")
+
+# 1. Initialize the player once (The "Inbuilt" Speaker connection)
+p = pyaudio.PyAudio()
+stream = p.open(
+    format=pyaudio.paInt16,
+    channels=1,
+    rate=24000, # Gemini TTS default rate
+    output=True
+)
 
 #Client for S2T, because Gemini compatible with the OpenAI Chat Completions endpoint
 client=OpenAI(
@@ -18,6 +28,8 @@ client=OpenAI(
 
 #TTS_CLIENT is created here because Gemini's TTS is a native multimodal capability that requires the official google-genai SDK
 tts_client = genai.Client(api_key=GEMINI_API_KEY)
+
+
 
 def tts(speech_data):
 
@@ -37,21 +49,18 @@ def tts(speech_data):
         )
     )
     audio_data = response.candidates[0].content.parts[0].inline_data.data
-    with wave.open("jarvis_response.wav", "wb") as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(24000)
-        wf.writeframes(audio_data)
-    print("Done! Audio saved as jarvis_response.wav")
+    
+    print("JARVIS is speaking...")
+    stream.write(audio_data)
 
 def main():
     #recoginizer : speech to text
     r=sr.Recognizer()
 
     #Temp file audio because work is getting done on Codespace
-    audio_file = "output_file.wav"
+    # audio_file = "output_file.wav"
     #Get access for users microphone as the source
-    with sr.AudioFile(audio_file) as source:  # when on VS Code , use sr.Microphone()
+    with sr.Microphone() as source:  # when on VS Code , use sr.Microphone()
         #ambient noise for noise cancellation
         r.adjust_for_ambient_noise(source)
 
