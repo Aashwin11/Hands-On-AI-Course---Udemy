@@ -6,6 +6,7 @@
 **/.env.development
 **/.env.test
 **/.env.production
+.vscode
 
 
 # Ignore all virtual environments (any folder containing "env")
